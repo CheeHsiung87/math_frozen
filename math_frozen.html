@@ -1,0 +1,2322 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#a5d8f3">
+<title>冰雪奇缘心算王国 · Frozen Math Kingdom</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+:root {
+  --bg-grad: linear-gradient(180deg, #e0f4ff 0%, #c5e8ff 50%, #a5d8f3 100%);
+  --bg-card: rgba(255, 255, 255, 0.85);
+  --bg-card-solid: #ffffff;
+  --text-primary: #1a3a5c;
+  --text-secondary: #4a6fa5;
+  --text-light: #7a9ec5;
+  --accent-blue: #4fc3f7;
+  --accent-purple: #7c4dff;
+  --accent-gold: #ffc44d;
+  --accent-pink: #ff80ab;
+  --accent-green: #66bb6a;
+  --accent-red: #ef5350;
+  --shadow: 0 6px 18px rgba(76,195,247,0.25);
+  --shadow-strong: 0 10px 28px rgba(76,195,247,0.35);
+  --border-card: 2px solid rgba(255,255,255,0.7);
+  --snow-color: rgba(255, 255, 255, 0.85);
+  --divider: rgba(0,0,0,0.06);
+}
+
+[data-theme="dark"] {
+  --bg-grad: linear-gradient(180deg, #0a1929 0%, #142847 50%, #1e3a5f 100%);
+  --bg-card: rgba(30, 50, 80, 0.7);
+  --bg-card-solid: #1e3050;
+  --text-primary: #eaf4ff;
+  --text-secondary: #b8d4f0;
+  --text-light: #88a8c8;
+  --accent-blue: #60a5fa;
+  --accent-purple: #a78bfa;
+  --accent-gold: #fcd34d;
+  --accent-pink: #f472b6;
+  --accent-green: #4ade80;
+  --accent-red: #f87171;
+  --shadow: 0 6px 18px rgba(0,0,0,0.4);
+  --shadow-strong: 0 10px 28px rgba(0,0,0,0.5);
+  --border-card: 2px solid rgba(255,255,255,0.1);
+  --snow-color: rgba(200, 220, 255, 0.7);
+  --divider: rgba(255,255,255,0.08);
+}
+
+html, body { height: 100%; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", "Helvetica Neue", sans-serif;
+  background: var(--bg-grad);
+  background-attachment: fixed;
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.snowflakes {
+  position: fixed; top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none; z-index: 0;
+  overflow: hidden;
+}
+.snowflake {
+  position: absolute; top: -20px;
+  color: var(--snow-color);
+  user-select: none;
+  animation: fall linear infinite;
+}
+@keyframes fall {
+  0% { transform: translateY(-20px) rotate(0deg); }
+  100% { transform: translateY(105vh) rotate(360deg); }
+}
+
+[data-theme="dark"] .stars {
+  position: fixed; top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none; z-index: 0;
+}
+[data-theme="dark"] .star {
+  position: absolute;
+  width: 2px; height: 2px;
+  background: #fff;
+  border-radius: 50%;
+  animation: twinkle 3s ease-in-out infinite;
+}
+@keyframes twinkle {
+  0%, 100% { opacity: 0.2; }
+  50% { opacity: 1; }
+}
+
+.app {
+  position: relative; z-index: 1;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 12px 16px 28px;
+  min-height: 100vh;
+}
+
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  gap: 8px;
+}
+.top-bar-right { display: flex; gap: 8px; }
+
+.icon-btn {
+  background: var(--bg-card);
+  border: var(--border-card);
+  border-radius: 50%;
+  width: 42px; height: 42px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  transition: transform 0.15s;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: var(--text-primary);
+}
+.icon-btn:active { transform: scale(0.92); }
+
+.lang-btn {
+  background: var(--bg-card);
+  border: var(--border-card);
+  border-radius: 21px;
+  height: 42px; padding: 0 14px;
+  font-weight: bold; font-size: 13px;
+  color: var(--text-primary);
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+.lang-btn:active { transform: scale(0.95); }
+
+.screen {
+  display: none;
+  animation: slideIn 0.35s ease;
+}
+.screen.active { display: block; }
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.title {
+  text-align: center;
+  font-size: 28px;
+  font-weight: 800;
+  margin: 8px 0 4px;
+  background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: 0.5px;
+}
+.subtitle {
+  text-align: center;
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+}
+
+.section-title {
+  font-size: 17px;
+  font-weight: 700;
+  margin: 18px 0 10px;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.character-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+.character-card {
+  background: var(--bg-card);
+  border: 3px solid transparent;
+  border-radius: 18px;
+  padding: 8px 4px;
+  text-align: center;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  transition: all 0.25s;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+.character-card:active { transform: scale(0.96); }
+.character-card.selected {
+  border-color: var(--accent-purple);
+  background: linear-gradient(135deg, rgba(124,77,255,0.15), rgba(79,195,247,0.15));
+  box-shadow: var(--shadow-strong);
+  transform: translateY(-3px);
+}
+.character-card svg {
+  width: 80px; height: 80px;
+  display: block; margin: 0 auto;
+}
+.character-name {
+  margin-top: 4px;
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--text-primary);
+}
+
+.mode-btn {
+  display: block;
+  width: 100%;
+  background: var(--bg-card);
+  border: var(--border-card);
+  border-radius: 18px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  text-align: left;
+  box-shadow: var(--shadow);
+  color: var(--text-primary);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+.mode-btn:active { transform: scale(0.98); }
+.mode-row {
+  display: flex; align-items: center; gap: 14px;
+}
+.mode-icon {
+  font-size: 32px; flex-shrink: 0;
+  width: 50px; height: 50px;
+  border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+}
+.mode-text { flex: 1; }
+.mode-name { font-weight: 700; font-size: 17px; margin-bottom: 2px; }
+.mode-desc { font-size: 12px; color: var(--text-secondary); }
+
+.level-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+.level-cell {
+  aspect-ratio: 1;
+  background: var(--bg-card);
+  border: var(--border-card);
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  position: relative;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+.level-cell:active:not(.locked) { transform: scale(0.94); }
+.level-cell.locked { opacity: 0.45; cursor: not-allowed; }
+.level-cell.unlocked {
+  background: linear-gradient(135deg, rgba(79,195,247,0.2), rgba(124,77,255,0.15));
+}
+.level-num {
+  font-size: 22px; font-weight: 800;
+  color: var(--accent-purple);
+  line-height: 1;
+}
+.level-stars {
+  font-size: 9px; margin-top: 3px;
+  color: var(--accent-gold);
+  letter-spacing: 1px;
+  height: 12px;
+}
+.level-lock {
+  position: absolute; top: 4px; right: 6px;
+  font-size: 11px; opacity: 0.7;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+  color: white;
+  border: none;
+  border-radius: 22px;
+  padding: 15px 28px;
+  font-size: 17px;
+  font-weight: 800;
+  cursor: pointer;
+  width: 100%;
+  box-shadow: var(--shadow-strong);
+  margin-top: 10px;
+  letter-spacing: 0.5px;
+}
+.btn-primary:active { transform: scale(0.97); }
+.btn-primary:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.btn-secondary {
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border: var(--border-card);
+  border-radius: 22px;
+  padding: 13px 24px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  width: 100%;
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+.btn-secondary:active { transform: scale(0.97); }
+
+.btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+.game-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 14px;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.player-mini { display: flex; align-items: center; gap: 6px; }
+.player-mini svg { width: 38px; height: 38px; }
+.player-name { font-size: 13px; font-weight: 700; color: var(--text-primary); }
+.player-level { font-size: 11px; color: var(--text-secondary); }
+
+.stat-pill {
+  background: var(--bg-card);
+  border: var(--border-card);
+  border-radius: 16px;
+  padding: 6px 11px;
+  font-weight: 700;
+  font-size: 13px;
+  box-shadow: var(--shadow);
+  display: flex; align-items: center; gap: 5px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: var(--text-primary);
+}
+.stat-pill.warn { color: var(--accent-red); animation: pulse 0.7s infinite; }
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.question-card {
+  background: var(--bg-card);
+  border: var(--border-card);
+  border-radius: 24px;
+  padding: 30px 18px;
+  text-align: center;
+  margin-bottom: 14px;
+  box-shadow: var(--shadow-strong);
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  min-height: 200px;
+}
+.question-card::before {
+  content: "❄";
+  position: absolute;
+  top: -15px; right: -15px;
+  font-size: 80px;
+  color: var(--accent-blue);
+  opacity: 0.12;
+  pointer-events: none;
+}
+.question-text {
+  font-size: 50px;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 12px 0;
+  letter-spacing: 4px;
+  line-height: 1.1;
+}
+.question-text .eq { color: var(--accent-purple); }
+.answer-display {
+  background: var(--bg-card-solid);
+  border: 3px solid var(--accent-blue);
+  border-radius: 18px;
+  padding: 12px;
+  font-size: 38px;
+  font-weight: 800;
+  text-align: center;
+  width: 60%;
+  max-width: 200px;
+  min-height: 64px;
+  color: var(--text-primary);
+  margin: 10px auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  letter-spacing: 4px;
+}
+.answer-display.shake { animation: shake 0.4s; }
+.answer-display.correct-glow {
+  border-color: var(--accent-green);
+  box-shadow: 0 0 20px rgba(102,187,106,0.6);
+  color: var(--accent-green);
+}
+.answer-display.wrong-glow {
+  border-color: var(--accent-red);
+  color: var(--accent-red);
+}
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-8px); }
+  75% { transform: translateX(8px); }
+}
+
+.feedback {
+  font-size: 18px;
+  font-weight: 700;
+  text-align: center;
+  margin-top: 8px;
+  min-height: 28px;
+  animation: bounce 0.5s ease;
+}
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-8px); }
+}
+.feedback.correct { color: var(--accent-green); }
+.feedback.wrong { color: var(--accent-red); }
+.feedback.tryagain { color: var(--accent-gold); }
+
+.numpad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 8px;
+  padding: 4px 2px 8px;
+}
+.num-btn {
+  position: relative;
+  background: linear-gradient(180deg, #ffffff 0%, #d8ecfb 100%);
+  border: none;
+  font-family: inherit;
+  border-radius: 24px;
+  padding: 20px 0 22px;
+  font-size: 30px;
+  font-weight: 800;
+  color: #2a4d70;
+  cursor: pointer;
+  user-select: none;
+  text-align: center;
+  box-shadow:
+    0 6px 0 #88b8d8,
+    0 9px 16px rgba(76,140,200,0.25),
+    inset 0 2px 0 rgba(255,255,255,0.95),
+    inset 0 -3px 0 rgba(140,180,210,0.18);
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+  letter-spacing: 1px;
+  overflow: hidden;
+}
+.num-btn::before {
+  content: "";
+  position: absolute;
+  top: 6px; left: 12px; right: 12px;
+  height: 35%;
+  background: linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0));
+  border-radius: 18px 18px 50% 50%;
+  pointer-events: none;
+}
+.num-btn:active {
+  transform: translateY(5px);
+  box-shadow:
+    0 1px 0 #88b8d8,
+    0 2px 4px rgba(76,140,200,0.2),
+    inset 0 2px 0 rgba(255,255,255,0.95);
+}
+.num-btn.go {
+  background: linear-gradient(180deg, #6ee0a8 0%, #3fbf85 100%);
+  color: #fff;
+  font-size: 20px;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.15);
+  box-shadow:
+    0 6px 0 #259660,
+    0 9px 16px rgba(63,191,133,0.4),
+    inset 0 2px 0 rgba(255,255,255,0.4),
+    inset 0 -3px 0 rgba(0,80,40,0.18);
+}
+.num-btn.go:active {
+  box-shadow:
+    0 1px 0 #259660,
+    0 2px 4px rgba(63,191,133,0.25),
+    inset 0 2px 0 rgba(255,255,255,0.4);
+}
+.num-btn.clr {
+  background: linear-gradient(180deg, #ffb3a8 0%, #ff8276 100%);
+  color: #fff;
+  font-size: 22px;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.15);
+  box-shadow:
+    0 6px 0 #d56860,
+    0 9px 16px rgba(255,130,118,0.4),
+    inset 0 2px 0 rgba(255,255,255,0.4),
+    inset 0 -3px 0 rgba(120,30,20,0.2);
+}
+.num-btn.clr:active {
+  box-shadow:
+    0 1px 0 #d56860,
+    0 2px 4px rgba(255,130,118,0.25),
+    inset 0 2px 0 rgba(255,255,255,0.4);
+}
+
+[data-theme="dark"] .num-btn {
+  background: linear-gradient(180deg, #3a5478 0%, #1f3658 100%);
+  color: #e8f4ff;
+  box-shadow:
+    0 6px 0 #0a1a30,
+    0 9px 16px rgba(0,0,0,0.5),
+    inset 0 2px 0 rgba(255,255,255,0.15),
+    inset 0 -3px 0 rgba(0,0,0,0.3);
+}
+[data-theme="dark"] .num-btn::before {
+  background: linear-gradient(180deg, rgba(255,255,255,0.18), rgba(255,255,255,0));
+}
+[data-theme="dark"] .num-btn:active {
+  box-shadow:
+    0 1px 0 #0a1a30,
+    0 2px 4px rgba(0,0,0,0.4),
+    inset 0 2px 0 rgba(255,255,255,0.15);
+}
+[data-theme="dark"] .num-btn.go {
+  background: linear-gradient(180deg, #4ade80 0%, #16a34a 100%);
+  color: #fff;
+}
+[data-theme="dark"] .num-btn.clr {
+  background: linear-gradient(180deg, #f87171 0%, #dc2626 100%);
+  color: #fff;
+}
+
+.celebrate {
+  position: fixed; top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none; z-index: 10;
+}
+.confetti {
+  position: absolute;
+  font-size: 22px;
+  animation: confettiFall 2.2s ease-out forwards;
+}
+@keyframes confettiFall {
+  0% { transform: translateY(-30px) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}
+
+.result-emoji {
+  font-size: 70px;
+  text-align: center;
+  margin: 10px 0;
+  animation: pop 0.7s ease;
+}
+@keyframes pop {
+  0% { transform: scale(0) rotate(-15deg); }
+  60% { transform: scale(1.25) rotate(8deg); }
+  100% { transform: scale(1) rotate(0); }
+}
+.result-title {
+  text-align: center;
+  font-size: 26px;
+  font-weight: 800;
+  margin-bottom: 4px;
+  color: var(--text-primary);
+}
+.result-msg {
+  text-align: center;
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: 16px;
+}
+.stars-large {
+  text-align: center;
+  font-size: 42px;
+  margin: 12px 0;
+  letter-spacing: 4px;
+}
+.stars-large .filled { color: var(--accent-gold); animation: starPop 0.5s ease backwards; }
+.stars-large .empty { color: rgba(255,196,77,0.25); }
+.stars-large .filled:nth-child(1) { animation-delay: 0.2s; }
+.stars-large .filled:nth-child(2) { animation-delay: 0.5s; }
+.stars-large .filled:nth-child(3) { animation-delay: 0.8s; }
+@keyframes starPop {
+  0% { transform: scale(0); opacity: 0; }
+  60% { transform: scale(1.4); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.result-stats {
+  background: var(--bg-card);
+  border: var(--border-card);
+  border-radius: 18px;
+  padding: 16px;
+  margin-bottom: 14px;
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+.result-row {
+  display: flex; justify-content: space-between;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--divider);
+  font-size: 15px;
+}
+.result-row:last-child { border-bottom: none; }
+.result-label { color: var(--text-secondary); }
+.result-value { font-weight: 700; color: var(--text-primary); }
+
+.streak-banner {
+  position: fixed;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  background: linear-gradient(135deg, var(--accent-gold), var(--accent-pink));
+  color: white;
+  font-size: 26px;
+  font-weight: 900;
+  padding: 18px 30px;
+  border-radius: 22px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+  z-index: 20;
+  pointer-events: none;
+  letter-spacing: 1px;
+  text-align: center;
+}
+.streak-banner.show {
+  animation: streakPop 1.4s ease forwards;
+}
+@keyframes streakPop {
+  0% { transform: translate(-50%, -50%) scale(0) rotate(-10deg); }
+  20% { transform: translate(-50%, -50%) scale(1.15) rotate(5deg); }
+  35% { transform: translate(-50%, -50%) scale(1) rotate(0); }
+  85% { transform: translate(-50%, -50%) scale(1) rotate(0); opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(0.8) rotate(0); opacity: 0; }
+}
+
+/* 中等手机（多数安卓 / iPhone）：让游戏页一屏装得下，不用滑 */
+@media (max-height: 900px) {
+  .app { padding: 8px 14px 16px; }
+  .top-bar { margin-bottom: 10px; }
+  .game-header { margin-bottom: 8px; gap: 6px; }
+  .player-mini svg { width: 32px; height: 32px; }
+  .player-name { font-size: 12px; }
+  .player-level { font-size: 10px; }
+  .stat-pill { font-size: 12px; padding: 5px 9px; }
+  .question-text { font-size: 38px; margin: 6px 0; letter-spacing: 2px; }
+  .question-card { padding: 16px 14px; min-height: 0; margin-bottom: 10px; }
+  .answer-display { font-size: 28px; padding: 6px; min-height: 46px; margin: 6px auto; }
+  .feedback { font-size: 15px; min-height: 22px; margin-top: 4px; }
+  .num-btn { padding: 12px 0 14px; font-size: 22px; border-radius: 18px; }
+  .num-btn.go, .num-btn.clr { font-size: 18px; }
+  .numpad { gap: 8px; margin-top: 4px; padding: 2px 2px 4px; }
+  .title { font-size: 24px; margin: 4px 0 2px; }
+  .subtitle { font-size: 13px; margin-bottom: 14px; }
+  .section-title { font-size: 15px; margin: 12px 0 8px; }
+}
+
+/* 极小屏幕（iPhone SE 一代等）：再压一点 */
+@media (max-height: 640px) {
+  .question-text { font-size: 30px; }
+  .question-card { padding: 12px 12px; }
+  .answer-display { font-size: 24px; min-height: 38px; }
+  .num-btn { padding: 9px 0 11px; font-size: 20px; }
+  .numpad { gap: 6px; }
+  .player-mini svg { width: 28px; height: 28px; }
+}
+
+@media (min-width: 480px) {
+  .character-grid { grid-template-columns: repeat(5, 1fr); }
+  .level-grid { grid-template-columns: repeat(6, 1fr); }
+}
+
+/* 防误触放大 */
+button, .num-btn, .level-cell, .character-card, .mode-btn, .icon-btn, .lang-btn {
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* 角色头像反应气泡 */
+.avatar-wrap { position: relative; display: inline-block; }
+.avatar-bubble {
+  position: absolute;
+  top: -8px; right: -10px;
+  font-size: 22px;
+  pointer-events: none;
+  animation: bubblePop 1.4s ease forwards;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+@keyframes bubblePop {
+  0% { opacity: 0; transform: scale(0) translateY(0); }
+  25% { opacity: 1; transform: scale(1.4) translateY(-2px); }
+  50% { opacity: 1; transform: scale(1) translateY(-6px); }
+  100% { opacity: 0; transform: scale(0.9) translateY(-20px); }
+}
+
+/* 闯关进度条 */
+.quest-bar {
+  flex: 1;
+  min-width: 110px;
+  height: 22px;
+  background: var(--bg-card);
+  border: var(--border-card);
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: var(--shadow);
+}
+.quest-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
+  border-radius: 12px;
+  transition: width 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 0 12px rgba(124,77,255,0.4);
+}
+.quest-bar-text {
+  position: absolute;
+  inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 800;
+  color: var(--text-primary);
+  text-shadow: 0 0 4px rgba(255,255,255,0.6);
+}
+[data-theme="dark"] .quest-bar-text { text-shadow: 0 0 4px rgba(0,0,0,0.6); color: #fff; }
+
+/* 教程气泡 */
+.tutorial-bubble {
+  position: fixed;
+  bottom: 280px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, #ffd54f, #ff80ab);
+  color: white;
+  padding: 12px 18px;
+  border-radius: 18px;
+  font-size: 14px;
+  font-weight: 700;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.25);
+  z-index: 30;
+  max-width: 280px;
+  text-align: center;
+  animation: tutBob 1.5s ease-in-out infinite;
+}
+.tutorial-bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -10px; left: 50%;
+  margin-left: -10px;
+  border: 10px solid transparent;
+  border-top-color: #ff80ab;
+}
+@keyframes tutBob {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(-6px); }
+}
+
+/* 题目卡片滑入动画 */
+.question-card.slide-in {
+  animation: cardSlideIn 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.question-card.slide-out {
+  animation: cardSlideOut 0.3s ease-in forwards;
+}
+@keyframes cardSlideIn {
+  0% { opacity: 0; transform: translateX(80%) rotate(8deg) scale(0.9); }
+  100% { opacity: 1; transform: translateX(0) rotate(0) scale(1); }
+}
+@keyframes cardSlideOut {
+  0% { opacity: 1; transform: translateX(0); }
+  100% { opacity: 0; transform: translateX(-80%) rotate(-6deg) scale(0.9); }
+}
+
+/* 欢迎页角色卡轻轻浮动 + 眨眼 */
+.character-card svg {
+  animation: charBob 3s ease-in-out infinite;
+}
+.character-card:nth-child(2) svg { animation-delay: 0.4s; }
+.character-card:nth-child(3) svg { animation-delay: 0.8s; }
+.character-card:nth-child(4) svg { animation-delay: 1.2s; }
+.character-card:nth-child(5) svg { animation-delay: 1.6s; }
+@keyframes charBob {
+  0%, 100% { transform: translateY(0) rotate(0); }
+  50% { transform: translateY(-4px) rotate(-1.5deg); }
+}
+.character-card.selected svg {
+  animation: charDance 1.2s ease-in-out infinite;
+}
+@keyframes charDance {
+  0%, 100% { transform: translateY(0) rotate(0); }
+  25% { transform: translateY(-6px) rotate(3deg); }
+  75% { transform: translateY(-3px) rotate(-3deg); }
+}
+
+/* 运算符上色 */
+.op-add { color: #4caf50; font-weight: 900; }
+.op-sub { color: #ef5350; font-weight: 900; }
+.op-mul { color: #ab47bc; font-weight: 900; }
+.op-div { color: #ff9800; font-weight: 900; }
+[data-theme="dark"] .op-add { color: #6ee7a3; }
+[data-theme="dark"] .op-sub { color: #ff8a82; }
+[data-theme="dark"] .op-mul { color: #ce93d8; }
+[data-theme="dark"] .op-div { color: #ffb74d; }
+
+/* 毕业典礼画面 */
+.graduation {
+  text-align: center;
+  padding: 20px 0;
+}
+.grad-crown {
+  font-size: 80px;
+  animation: crownFloat 2s ease-in-out infinite;
+  margin: 10px 0;
+}
+@keyframes crownFloat {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-10px) scale(1.05); }
+}
+.grad-title {
+  font-size: 30px;
+  font-weight: 900;
+  background: linear-gradient(135deg, #ffd54f, #ff80ab, #7c4dff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 6px;
+}
+.grad-msg {
+  font-size: 15px;
+  color: var(--text-secondary);
+  margin-bottom: 16px;
+}
+.grad-cast {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin: 14px 0;
+}
+.grad-cast > div {
+  width: 60px; height: 60px;
+  animation: castWave 1.6s ease-in-out infinite;
+}
+.grad-cast > div:nth-child(1) { animation-delay: 0s; }
+.grad-cast > div:nth-child(2) { animation-delay: 0.2s; }
+.grad-cast > div:nth-child(3) { animation-delay: 0.4s; }
+.grad-cast > div:nth-child(4) { animation-delay: 0.6s; }
+.grad-cast > div:nth-child(5) { animation-delay: 0.8s; }
+@keyframes castWave {
+  0%, 100% { transform: translateY(0) rotate(-3deg); }
+  50% { transform: translateY(-8px) rotate(3deg); }
+}
+
+/* 结果页角色出场 */
+.result-char {
+  width: 110px; height: 110px;
+  margin: 0 auto 10px;
+  animation: resultCharIn 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes resultCharIn {
+  0% { opacity: 0; transform: translateY(40px) scale(0.5); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* 跳过提示 */
+.skip-hint {
+  position: absolute;
+  bottom: 8px; right: 14px;
+  font-size: 11px;
+  color: var(--text-light);
+  opacity: 0.7;
+  pointer-events: none;
+  animation: skipPulse 1.5s ease-in-out infinite;
+}
+@keyframes skipPulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+/* 3星超级庆祝 */
+.super-celebrate {
+  position: fixed; inset: 0;
+  pointer-events: none; z-index: 25;
+  background: radial-gradient(circle at center, rgba(255,196,77,0.35), transparent 65%);
+  animation: superFlash 1.2s ease forwards;
+}
+@keyframes superFlash {
+  0% { opacity: 0; }
+  20% { opacity: 1; }
+  80% { opacity: 1; }
+  100% { opacity: 0; }
+}
+.super-star {
+  position: absolute;
+  font-size: 56px;
+  animation: superStar 1.8s ease forwards;
+  filter: drop-shadow(0 4px 12px rgba(255,196,77,0.6));
+}
+@keyframes superStar {
+  0% { transform: scale(0) rotate(0deg); opacity: 0; }
+  30% { transform: scale(1.6) rotate(180deg); opacity: 1; }
+  100% { transform: scale(0.8) rotate(720deg); opacity: 0; }
+}
+</style>
+</head>
+<body data-theme="light">
+
+<div class="snowflakes" id="snowflakes"></div>
+<div class="stars" id="stars"></div>
+
+<div class="app">
+
+  <!-- TOP BAR -->
+  <div class="top-bar">
+    <button class="icon-btn" id="backBtn" style="visibility:hidden">←</button>
+    <div class="top-bar-right">
+      <button class="icon-btn" id="speechBtn">🔊</button>
+      <button class="lang-btn" id="langBtn">中 / EN</button>
+      <button class="icon-btn" id="themeBtn">🌙</button>
+    </div>
+  </div>
+
+  <!-- SCREEN: WELCOME / CHARACTER SELECT -->
+  <div class="screen active" id="screen-welcome">
+    <div class="title" data-i18n="title">冰雪奇缘心算王国</div>
+    <div class="subtitle" data-i18n="subtitle">选好你的伙伴，一起冒险吧！</div>
+
+    <div class="section-title">❄️ <span data-i18n="chooseChar">选择你的伙伴</span></div>
+    <div class="character-grid" id="characterGrid"></div>
+
+    <button class="btn-primary" id="welcomeNext" disabled data-i18n="start">开始游戏</button>
+  </div>
+
+  <!-- SCREEN: MODE SELECT -->
+  <div class="screen" id="screen-mode">
+    <div class="title" data-i18n="title">冰雪奇缘心算王国</div>
+    <div class="section-title">🎮 <span data-i18n="chooseMode">选择游戏模式</span></div>
+    <div id="modeList"></div>
+  </div>
+
+  <!-- SCREEN: LEVEL SELECT -->
+  <div class="screen" id="screen-level">
+    <div class="title" id="levelScreenTitle">练习模式</div>
+    <div class="subtitle" id="levelScreenSubtitle">挑战12个等级，越来越难哦！</div>
+    <div class="section-title">⭐ <span data-i18n="chooseLevel">选择等级</span></div>
+    <div class="level-grid" id="levelGrid"></div>
+  </div>
+
+  <!-- SCREEN: GAME -->
+  <div class="screen" id="screen-game">
+    <div class="game-header">
+      <div class="player-mini">
+        <div class="avatar-wrap" id="gamePlayerAvatar"></div>
+        <div>
+          <div class="player-name" id="gamePlayerName">Elsa</div>
+          <div class="player-level" id="gameLevelLabel">Level 1</div>
+        </div>
+      </div>
+      <div style="flex:1"></div>
+      <div id="gameStats" style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end"></div>
+    </div>
+
+    <div class="question-card">
+      <div class="question-text" id="questionText">1 + 1 <span class="eq">=</span> ?</div>
+      <div class="answer-display" id="answerDisplay">&nbsp;</div>
+      <div class="feedback" id="feedback">&nbsp;</div>
+    </div>
+
+    <div class="numpad" id="numpad"></div>
+  </div>
+
+  <!-- SCREEN: RESULT -->
+  <div class="screen" id="screen-result">
+    <div class="graduation" id="graduation" style="display:none">
+      <div class="grad-crown">👑</div>
+      <div class="grad-title" id="gradTitle">恭喜毕业！</div>
+      <div class="grad-msg" id="gradMsg">12 关全部过关，你是真正的心算王者！</div>
+      <div class="grad-cast" id="gradCast"></div>
+    </div>
+    <div class="result-char" id="resultChar"></div>
+    <div class="result-emoji" id="resultEmoji">🎉</div>
+    <div class="result-title" id="resultTitle">过关啦！</div>
+    <div class="result-msg" id="resultMsg">真厉害！</div>
+    <div class="stars-large" id="resultStars"></div>
+    <div class="result-stats" id="resultStats"></div>
+    <div class="btn-row">
+      <button class="btn-secondary" id="resultHome" data-i18n="home">回主页</button>
+      <button class="btn-primary" id="resultAgain" data-i18n="again">再玩一次</button>
+    </div>
+    <button class="btn-secondary" id="resultNext" style="margin-top:10px;display:none" data-i18n="nextLevel">下一关</button>
+  </div>
+
+</div>
+
+<div class="celebrate" id="celebrate"></div>
+<div class="streak-banner" id="streakBanner"></div>
+
+<script>
+/* ============================================================
+   FROZEN MATH KINGDOM
+   单文件儿童心算游戏
+   ============================================================ */
+
+// ---------- 国际化（中英文） ----------
+const I18N = {
+  zh: {
+    title: '冰雪奇缘心算王国',
+    subtitle: '选好你的伙伴，一起冒险吧！',
+    chooseChar: '选择你的伙伴',
+    chooseMode: '选择游戏模式',
+    chooseLevel: '选择等级',
+    practiceMode: '练习模式',
+    practiceDesc: '10 题轻松练习，无时间压力',
+    timedMode: '限时模式',
+    timedDesc: '60 秒内答对越多越好',
+    questMode: '闯关模式',
+    questDesc: '答对 10 题过关，3 条命',
+    challengeMode: '挑战模式',
+    challengeDesc: '连续答对，奖励翻倍',
+    start: '开始游戏',
+    correct: '太棒了！',
+    tryAgain: '再试一次！',
+    wrong: '答案是',
+    home: '回主页',
+    again: '再玩一次',
+    nextLevel: '下一关 ▶',
+    yourScore: '得分',
+    correctAnswers: '答对题数',
+    totalAnswers: '总题数',
+    accuracy: '正确率',
+    bestStreak: '最长连击',
+    timeUsed: '用时',
+    timeUp: '时间到！',
+    gameOver: '游戏结束',
+    levelComplete: '过关啦！',
+    practiceDone: '练习完成！',
+    locked: '未解锁',
+    levelLabel: '第 {n} 关',
+    score: '分',
+    time: '时间',
+    lives: '生命',
+    streak: '连击',
+    correctCount: '答对',
+    elsa: '艾莎',
+    anna: '安娜',
+    olaf: '雪宝',
+    kristoff: '克里斯托',
+    sven: '斯文',
+    msgGreat: '你真棒！',
+    msgKeep: '继续努力！',
+    msgPerfect: '完美无瑕！',
+    msgCool: '冰雪一样酷！',
+    msgWow: '哇！太厉害了！',
+    seconds: '秒',
+    levelUnlocked: '解锁新等级！',
+    tutorialTip: '👇 点数字，再点 OK 就好啦！',
+    perfectMsg: '完美三星！太厉害啦！',
+    questProgress: '过关进度',
+    gradTitle: '🎓 恭喜毕业！',
+    gradMsg: '12 关全部攻克！你是真正的心算王者！',
+  },
+  en: {
+    title: 'Frozen Math Kingdom',
+    subtitle: 'Pick your buddy, start the adventure!',
+    chooseChar: 'Choose your buddy',
+    chooseMode: 'Choose a mode',
+    chooseLevel: 'Choose a level',
+    practiceMode: 'Practice',
+    practiceDesc: '10 questions, no timer',
+    timedMode: 'Time Attack',
+    timedDesc: 'Most correct in 60 seconds',
+    questMode: 'Quest',
+    questDesc: '10 correct to win, 3 lives',
+    challengeMode: 'Challenge',
+    challengeDesc: 'Streaks earn bigger rewards',
+    start: 'Start',
+    correct: 'Awesome!',
+    tryAgain: 'Try again!',
+    wrong: 'The answer is',
+    home: 'Home',
+    again: 'Play Again',
+    nextLevel: 'Next ▶',
+    yourScore: 'Score',
+    correctAnswers: 'Correct',
+    totalAnswers: 'Total',
+    accuracy: 'Accuracy',
+    bestStreak: 'Best streak',
+    timeUsed: 'Time',
+    timeUp: "Time's up!",
+    gameOver: 'Game Over',
+    levelComplete: 'Level Complete!',
+    practiceDone: 'Practice Done!',
+    locked: 'Locked',
+    levelLabel: 'Level {n}',
+    score: 'Score',
+    time: 'Time',
+    lives: 'Lives',
+    streak: 'Streak',
+    correctCount: 'Correct',
+    elsa: 'Elsa',
+    anna: 'Anna',
+    olaf: 'Olaf',
+    kristoff: 'Kristoff',
+    sven: 'Sven',
+    msgGreat: 'You did great!',
+    msgKeep: 'Keep going!',
+    msgPerfect: 'Flawless!',
+    msgCool: 'Cool as ice!',
+    msgWow: 'Wow! Amazing!',
+    seconds: 's',
+    levelUnlocked: 'New level unlocked!',
+    tutorialTip: '👇 Tap numbers, then OK!',
+    perfectMsg: 'Perfect 3 stars! Awesome!',
+    questProgress: 'Quest Progress',
+    gradTitle: '🎓 Congrats, Graduate!',
+    gradMsg: 'All 12 levels conquered! You are a Math Champion!',
+  }
+};
+
+function t(key, vars) {
+  let s = (I18N[state.language] || I18N.zh)[key] || key;
+  if (vars) for (const k in vars) s = s.replace('{'+k+'}', vars[k]);
+  return s;
+}
+
+// ---------- 角色 SVG（Q版冰雪奇缘人物） ----------
+const CHARACTERS = {
+  elsa: {
+    key: 'elsa',
+    nameKey: 'elsa',
+    svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <defs><linearGradient id="elsaDress" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#c5e8ff"/><stop offset="1" stop-color="#7cc0e8"/></linearGradient></defs>
+      <ellipse cx="50" cy="92" rx="34" ry="8" fill="rgba(0,0,0,0.08)"/>
+      <path d="M28 92 Q28 70 50 68 Q72 70 72 92 Z" fill="url(#elsaDress)"/>
+      <path d="M28 92 Q35 86 50 86 Q65 86 72 92" fill="#fff" opacity="0.4"/>
+      <rect x="46" y="58" width="8" height="12" fill="#ffe0c2" rx="3"/>
+      <ellipse cx="50" cy="35" rx="22" ry="22" fill="#ffe0c2"/>
+      <path d="M30 28 Q30 14 50 14 Q70 14 70 28 L66 28 Q60 22 50 22 Q40 22 34 28 Z" fill="#f5ecd0"/>
+      <path d="M30 30 Q26 36 28 44 L33 38 Z" fill="#f5ecd0"/>
+      <path d="M70 30 Q74 36 72 44 L67 38 Z" fill="#f5ecd0"/>
+      <polygon points="42,18 44,9 46,18" fill="#9bd4f0" stroke="#6ab0d8" stroke-width="0.5"/>
+      <polygon points="48,16 50,5 52,16" fill="#c5e8ff" stroke="#6ab0d8" stroke-width="0.5"/>
+      <polygon points="54,18 56,9 58,18" fill="#9bd4f0" stroke="#6ab0d8" stroke-width="0.5"/>
+      <ellipse cx="42" cy="36" rx="3" ry="4" fill="#fff"/>
+      <ellipse cx="58" cy="36" rx="3" ry="4" fill="#fff"/>
+      <circle cx="42" cy="37" r="2.2" fill="#3a8fc2"/>
+      <circle cx="58" cy="37" r="2.2" fill="#3a8fc2"/>
+      <circle cx="42" cy="37.5" r="1" fill="#1a1a1a"/>
+      <circle cx="58" cy="37.5" r="1" fill="#1a1a1a"/>
+      <circle cx="43" cy="35.5" r="0.8" fill="#fff"/>
+      <circle cx="59" cy="35.5" r="0.8" fill="#fff"/>
+      <path d="M39 31 Q42 30 45 31" stroke="#c8b070" stroke-width="1" fill="none" stroke-linecap="round"/>
+      <path d="M55 31 Q58 30 61 31" stroke="#c8b070" stroke-width="1" fill="none" stroke-linecap="round"/>
+      <ellipse cx="50" cy="42" rx="1.3" ry="0.9" fill="#f0c8a8"/>
+      <path d="M46 48 Q50 51 54 48" stroke="#c87080" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+      <ellipse cx="38" cy="44" rx="2.5" ry="1.6" fill="#ffb0c0" opacity="0.45"/>
+      <ellipse cx="62" cy="44" rx="2.5" ry="1.6" fill="#ffb0c0" opacity="0.45"/>
+      <path d="M68 38 Q80 50 76 78" stroke="#f5ecd0" stroke-width="7" fill="none" stroke-linecap="round"/>
+      <ellipse cx="74" cy="48" rx="3.5" ry="3" fill="#ebe0c0"/>
+      <ellipse cx="77" cy="58" rx="3.5" ry="3" fill="#ebe0c0"/>
+      <ellipse cx="76" cy="68" rx="3.5" ry="3" fill="#ebe0c0"/>
+      <ellipse cx="73" cy="76" rx="2.5" ry="2" fill="#ebe0c0"/>
+      <text x="20" y="78" font-size="9" fill="#6ab0d8" opacity="0.65">❄</text>
+      <text x="14" y="55" font-size="6" fill="#6ab0d8" opacity="0.5">❄</text>
+    </svg>`
+  },
+  anna: {
+    key: 'anna',
+    nameKey: 'anna',
+    svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <defs><linearGradient id="annaDress" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#3a7a5a"/><stop offset="1" stop-color="#1f4a36"/></linearGradient><linearGradient id="annaHair" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#b8693f"/><stop offset="1" stop-color="#8a4a28"/></linearGradient></defs>
+      <ellipse cx="50" cy="92" rx="34" ry="8" fill="rgba(0,0,0,0.08)"/>
+      <path d="M28 92 Q28 70 50 68 Q72 70 72 92 Z" fill="url(#annaDress)"/>
+      <ellipse cx="50" cy="74" rx="13" ry="2.5" fill="#0a3022"/>
+      <path d="M44 70 L46 76 L48 70 Z M52 70 L54 76 L56 70 Z" fill="#d4a868" opacity="0.7"/>
+      <rect x="46" y="58" width="8" height="12" fill="#ffe0c2" rx="3"/>
+      <ellipse cx="50" cy="35" rx="22" ry="22" fill="#ffe0c2"/>
+      <path d="M28 30 Q28 12 50 12 Q72 12 72 30 L68 30 Q62 22 50 22 Q38 22 32 30 Z" fill="url(#annaHair)"/>
+      <path d="M40 22 Q43 14 47 14 Q49 18 47 22 Q45 24 43 24 Q41 24 40 22 Z" fill="#f5e8c8"/>
+      <path d="M42 18 Q45 16 47 20" stroke="#fff" stroke-width="1.2" fill="none" stroke-linecap="round" opacity="0.8"/>
+      <ellipse cx="42" cy="36" rx="3.2" ry="4.2" fill="#fff"/>
+      <ellipse cx="58" cy="36" rx="3.2" ry="4.2" fill="#fff"/>
+      <circle cx="42" cy="37" r="2.4" fill="#4a8eb0"/>
+      <circle cx="58" cy="37" r="2.4" fill="#4a8eb0"/>
+      <circle cx="42" cy="37.5" r="1.1" fill="#1a1a1a"/>
+      <circle cx="58" cy="37.5" r="1.1" fill="#1a1a1a"/>
+      <circle cx="43" cy="35.5" r="0.9" fill="#fff"/>
+      <circle cx="59" cy="35.5" r="0.9" fill="#fff"/>
+      <path d="M38 30 Q42 29 46 30" stroke="#7a3a1e" stroke-width="1.1" fill="none" stroke-linecap="round"/>
+      <path d="M54 30 Q58 29 62 30" stroke="#7a3a1e" stroke-width="1.1" fill="none" stroke-linecap="round"/>
+      <ellipse cx="50" cy="43" rx="1.4" ry="1" fill="#f0c8a8"/>
+      <path d="M43 47 Q50 55 57 47" stroke="#a04050" stroke-width="1.8" fill="#ff95a5" stroke-linecap="round"/>
+      <path d="M45 49 Q50 52 55 49" fill="#fff" opacity="0.6"/>
+      <circle cx="40" cy="42" r="0.6" fill="#a05030"/>
+      <circle cx="42.5" cy="44" r="0.6" fill="#a05030"/>
+      <circle cx="37.5" cy="44.5" r="0.6" fill="#a05030"/>
+      <circle cx="57.5" cy="44.5" r="0.6" fill="#a05030"/>
+      <circle cx="60" cy="42" r="0.6" fill="#a05030"/>
+      <circle cx="62.5" cy="44" r="0.6" fill="#a05030"/>
+      <ellipse cx="36" cy="47" rx="3.2" ry="2" fill="#ff90a0" opacity="0.55"/>
+      <ellipse cx="64" cy="47" rx="3.2" ry="2" fill="#ff90a0" opacity="0.55"/>
+      <path d="M28 38 Q18 55 22 80" stroke="url(#annaHair)" stroke-width="7" fill="none" stroke-linecap="round"/>
+      <path d="M72 38 Q82 55 78 80" stroke="url(#annaHair)" stroke-width="7" fill="none" stroke-linecap="round"/>
+      <path d="M22 50 Q23 53 22 56" stroke="#7a3a1e" stroke-width="1" fill="none"/>
+      <path d="M78 50 Q77 53 78 56" stroke="#7a3a1e" stroke-width="1" fill="none"/>
+      <path d="M22 62 Q23 65 22 68" stroke="#7a3a1e" stroke-width="1" fill="none"/>
+      <path d="M78 62 Q77 65 78 68" stroke="#7a3a1e" stroke-width="1" fill="none"/>
+      <ellipse cx="22" cy="80" rx="3.5" ry="2.8" fill="#ff90a0"/>
+      <ellipse cx="78" cy="80" rx="3.5" ry="2.8" fill="#ff90a0"/>
+      <circle cx="20" cy="79" r="1.2" fill="#fff" opacity="0.7"/>
+      <circle cx="76" cy="79" r="1.2" fill="#fff" opacity="0.7"/>
+    </svg>`
+  },
+  olaf: {
+    key: 'olaf',
+    nameKey: 'olaf',
+    svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="50" cy="94" rx="32" ry="5" fill="rgba(0,0,0,0.08)"/>
+      <ellipse cx="50" cy="82" rx="22" ry="13" fill="#fff" stroke="#b8d4e8" stroke-width="1.2"/>
+      <ellipse cx="50" cy="62" rx="18" ry="13" fill="#fff" stroke="#b8d4e8" stroke-width="1.2"/>
+      <circle cx="50" cy="78" r="2" fill="#2a2a2a"/>
+      <circle cx="50" cy="65" r="2" fill="#2a2a2a"/>
+      <path d="M32 58 Q22 50 14 44" stroke="#7a4a28" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <path d="M14 44 Q10 40 12 36" stroke="#7a4a28" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <path d="M14 44 Q8 44 5 48" stroke="#7a4a28" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <path d="M68 58 Q78 50 86 44" stroke="#7a4a28" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <path d="M86 44 Q90 40 88 36" stroke="#7a4a28" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <path d="M86 44 Q92 44 95 48" stroke="#7a4a28" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <ellipse cx="50" cy="36" rx="17" ry="14" fill="#fff" stroke="#b8d4e8" stroke-width="1.2"/>
+      <ellipse cx="42" cy="33" rx="3.2" ry="4" fill="#1a1a1a"/>
+      <ellipse cx="58" cy="33" rx="3.2" ry="4" fill="#1a1a1a"/>
+      <circle cx="43" cy="32" r="1" fill="#fff"/>
+      <circle cx="59" cy="32" r="1" fill="#fff"/>
+      <path d="M37 27 L43 26" stroke="#7a4a28" stroke-width="1.5" stroke-linecap="round"/>
+      <path d="M57 26 L63 27" stroke="#7a4a28" stroke-width="1.5" stroke-linecap="round"/>
+      <path d="M50 36 L72 38 L50 42 Z" fill="#ff8c1a" stroke="#cc5500" stroke-width="0.6"/>
+      <line x1="56" y1="38" x2="56" y2="40" stroke="#cc5500" stroke-width="0.5"/>
+      <line x1="62" y1="38.5" x2="62" y2="40.5" stroke="#cc5500" stroke-width="0.5"/>
+      <line x1="68" y1="39" x2="68" y2="41" stroke="#cc5500" stroke-width="0.5"/>
+      <path d="M40 44 Q50 52 60 44 Q58 50 50 50 Q42 50 40 44 Z" fill="#1a1a1a"/>
+      <path d="M44 46 Q50 50 56 46" fill="#ff9090"/>
+      <rect x="47" y="44" width="2" height="3" fill="#fff" rx="0.5"/>
+      <rect x="51" y="44" width="2" height="3" fill="#fff" rx="0.5"/>
+      <line x1="46" y1="20" x2="44" y2="12" stroke="#5d3820" stroke-width="1.6" stroke-linecap="round"/>
+      <line x1="50" y1="19" x2="50" y2="10" stroke="#5d3820" stroke-width="1.6" stroke-linecap="round"/>
+      <line x1="54" y1="20" x2="56" y2="12" stroke="#5d3820" stroke-width="1.6" stroke-linecap="round"/>
+      <line x1="44" y1="12" x2="42" y2="9" stroke="#5d3820" stroke-width="1.2" stroke-linecap="round"/>
+      <line x1="50" y1="10" x2="48" y2="6" stroke="#5d3820" stroke-width="1.2" stroke-linecap="round"/>
+      <line x1="56" y1="12" x2="58" y2="9" stroke="#5d3820" stroke-width="1.2" stroke-linecap="round"/>
+    </svg>`
+  },
+  kristoff: {
+    key: 'kristoff',
+    nameKey: 'kristoff',
+    svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <defs><linearGradient id="kristCoat" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#7a5236"/><stop offset="1" stop-color="#4a2e1a"/></linearGradient></defs>
+      <ellipse cx="50" cy="92" rx="34" ry="8" fill="rgba(0,0,0,0.08)"/>
+      <path d="M24 92 Q24 70 50 68 Q76 70 76 92 Z" fill="url(#kristCoat)"/>
+      <path d="M30 70 Q50 64 70 70 Q70 76 50 73 Q30 76 30 70 Z" fill="#d4b896"/>
+      <circle cx="35" cy="71" r="1.5" fill="#fff" opacity="0.6"/>
+      <circle cx="40" cy="69" r="1.3" fill="#fff" opacity="0.6"/>
+      <circle cx="45" cy="68.5" r="1.4" fill="#fff" opacity="0.6"/>
+      <circle cx="50" cy="68" r="1.5" fill="#fff" opacity="0.6"/>
+      <circle cx="55" cy="68.5" r="1.4" fill="#fff" opacity="0.6"/>
+      <circle cx="60" cy="69" r="1.3" fill="#fff" opacity="0.6"/>
+      <circle cx="65" cy="71" r="1.5" fill="#fff" opacity="0.6"/>
+      <rect x="45" y="58" width="10" height="10" fill="#ffd5b0" rx="3"/>
+      <ellipse cx="50" cy="36" rx="20" ry="20" fill="#ffd5b0"/>
+      <path d="M26 28 Q24 14 34 12 Q40 10 44 16 Q48 12 52 16 Q56 10 62 12 Q72 14 74 28 L70 26 Q66 24 60 24 Q54 22 50 24 Q46 22 40 24 Q34 24 30 26 Z" fill="#d4a868"/>
+      <path d="M28 16 Q30 10 36 12 L34 18 Z" fill="#d4a868"/>
+      <path d="M72 16 Q70 10 64 12 L66 18 Z" fill="#d4a868"/>
+      <path d="M28 30 Q24 38 28 46 L33 38 Z" fill="#d4a868"/>
+      <path d="M72 30 Q76 38 72 46 L67 38 Z" fill="#d4a868"/>
+      <path d="M38 22 L40 16 M44 21 L43 14 M50 20 L52 14 M56 21 L58 14 M62 22 L64 16" stroke="#b8904a" stroke-width="0.8" stroke-linecap="round"/>
+      <ellipse cx="42" cy="36" rx="3.2" ry="4.2" fill="#fff"/>
+      <ellipse cx="58" cy="36" rx="3.2" ry="4.2" fill="#fff"/>
+      <circle cx="42" cy="37" r="2.4" fill="#6b5230"/>
+      <circle cx="58" cy="37" r="2.4" fill="#6b5230"/>
+      <circle cx="42" cy="37.5" r="1.1" fill="#1a1a1a"/>
+      <circle cx="58" cy="37.5" r="1.1" fill="#1a1a1a"/>
+      <circle cx="43" cy="35.5" r="0.9" fill="#fff"/>
+      <circle cx="59" cy="35.5" r="0.9" fill="#fff"/>
+      <path d="M38 30 Q42 29 46 30" stroke="#8a6030" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+      <path d="M54 30 Q58 29 62 30" stroke="#8a6030" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+      <ellipse cx="50" cy="43" rx="1.8" ry="1.3" fill="#e8a888"/>
+      <path d="M43 49 Q50 54 57 49" stroke="#a04050" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+      <ellipse cx="36" cy="47" rx="3" ry="1.8" fill="#ff8870" opacity="0.5"/>
+      <ellipse cx="64" cy="47" rx="3" ry="1.8" fill="#ff8870" opacity="0.5"/>
+    </svg>`
+  },
+  sven: {
+    key: 'sven',
+    nameKey: 'sven',
+    svg: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="50" cy="94" rx="32" ry="5" fill="rgba(0,0,0,0.08)"/>
+      <ellipse cx="50" cy="78" rx="24" ry="14" fill="#8b6f47"/>
+      <path d="M30 22 Q26 14 22 10 M30 22 Q24 18 20 18 M30 22 Q28 16 24 14" stroke="#5d3820" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+      <path d="M70 22 Q74 14 78 10 M70 22 Q76 18 80 18 M70 22 Q72 16 76 14" stroke="#5d3820" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+      <ellipse cx="50" cy="42" rx="22" ry="22" fill="#a07a55"/>
+      <ellipse cx="32" cy="32" rx="6" ry="9" fill="#a07a55" transform="rotate(-30 32 32)"/>
+      <ellipse cx="68" cy="32" rx="6" ry="9" fill="#a07a55" transform="rotate(30 68 32)"/>
+      <ellipse cx="32" cy="33" rx="3" ry="5" fill="#d4a890" transform="rotate(-30 32 33)"/>
+      <ellipse cx="68" cy="33" rx="3" ry="5" fill="#d4a890" transform="rotate(30 68 33)"/>
+      <ellipse cx="50" cy="56" rx="14" ry="11" fill="#c8a578"/>
+      <ellipse cx="42" cy="38" rx="4" ry="5" fill="#fff"/>
+      <ellipse cx="58" cy="38" rx="4" ry="5" fill="#fff"/>
+      <circle cx="42" cy="39" r="3" fill="#1a1a1a"/>
+      <circle cx="58" cy="39" r="3" fill="#1a1a1a"/>
+      <circle cx="43" cy="37" r="1.1" fill="#fff"/>
+      <circle cx="59" cy="37" r="1.1" fill="#fff"/>
+      <path d="M38 32 Q42 30 46 32" stroke="#5d3820" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+      <path d="M54 32 Q58 30 62 32" stroke="#5d3820" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+      <ellipse cx="50" cy="52" rx="5" ry="3.5" fill="#3a2418"/>
+      <ellipse cx="48" cy="51" rx="1.2" ry="0.8" fill="#a08070"/>
+      <path d="M44 60 Q50 64 56 60" stroke="#3a2418" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <rect x="47" y="60" width="2.2" height="3.5" fill="#fff" rx="0.5"/>
+      <rect x="50.8" y="60" width="2.2" height="3.5" fill="#fff" rx="0.5"/>
+      <ellipse cx="40" cy="48" rx="3" ry="2" fill="#ff9080" opacity="0.3"/>
+      <ellipse cx="60" cy="48" rx="3" ry="2" fill="#ff9080" opacity="0.3"/>
+    </svg>`
+  }
+};
+
+// ---------- 等级配置 ----------
+const LEVEL_CONFIGS = {
+  1:  { name: '+', desc: '加法 1-5', gen: () => addQ(1, 5) },
+  2:  { name: '+', desc: '加法 1-10', gen: () => addQ(1, 10) },
+  3:  { name: '+−', desc: '加减 1-10', gen: () => mixQ(['+','-'], 1, 10) },
+  4:  { name: '+−', desc: '加减 1-20', gen: () => mixQ(['+','-'], 1, 20) },
+  5:  { name: '+−', desc: '加减 1-50', gen: () => mixQ(['+','-'], 5, 50) },
+  6:  { name: '+−', desc: '加减 1-100', gen: () => mixQ(['+','-'], 10, 100) },
+  7:  { name: '×', desc: '乘法 ×1-5', gen: () => mulQ(1, 5) },
+  8:  { name: '×', desc: '乘法 ×1-9', gen: () => mulQ(2, 9) },
+  9:  { name: '÷', desc: '除法', gen: () => divQ(2, 9) },
+  10: { name: '+−×', desc: '加减乘混合', gen: () => mixQ(['+','-','*'], 5, 30) },
+  11: { name: '+−×÷', desc: '四则混合', gen: () => mixQ(['+','-','*','/'], 5, 50) },
+  12: { name: '★', desc: '终极挑战', gen: () => twoStepQ() }
+};
+
+function ri(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+
+function addQ(min, max) {
+  const a = ri(min, max), b = ri(min, max);
+  return { text: `${a} + ${b}`, answer: a + b };
+}
+function mixQ(ops, min, max) {
+  const op = ops[ri(0, ops.length - 1)];
+  let a, b, ans, text;
+  if (op === '+') { a = ri(min, max); b = ri(min, max); ans = a + b; text = `${a} + ${b}`; }
+  else if (op === '-') { a = ri(min, max); b = ri(min, a); ans = a - b; text = `${a} − ${b}`; }
+  else if (op === '*') { a = ri(2, 9); b = ri(2, 9); ans = a * b; text = `${a} × ${b}`; }
+  else { b = ri(2, 9); ans = ri(2, 9); a = b * ans; text = `${a} ÷ ${b}`; }
+  return { text, answer: ans };
+}
+function mulQ(min, max) {
+  const a = ri(min, max), b = ri(1, 9);
+  return { text: `${a} × ${b}`, answer: a * b };
+}
+function divQ(min, max) {
+  const b = ri(min, max), ans = ri(2, 9);
+  return { text: `${b * ans} ÷ ${b}`, answer: ans };
+}
+function twoStepQ() {
+  const a = ri(2, 9), b = ri(2, 9);
+  const first = a * b;
+  if (Math.random() < 0.5) {
+    const c = ri(2, 25);
+    return { text: `${a} × ${b} + ${c}`, answer: first + c };
+  } else {
+    const c = ri(2, Math.max(3, first - 2));
+    return { text: `${a} × ${b} − ${c}`, answer: first - c };
+  }
+}
+
+// ---------- 状态 ----------
+const state = {
+  language: 'zh',
+  theme: 'light',
+  soundMode: 'all',
+  selectedCharacter: null,
+  unlockedLevels: [1],
+  levelStars: {},
+  lastMode: null,
+  lastLevel: 1,
+  seenTutorial: false,
+  // 当前游戏
+  currentMode: null,
+  currentLevel: 1,
+  currentQuestion: null,
+  attempts: 0,
+  inputBuffer: '',
+  score: 0,
+  questionsAnswered: 0,
+  correctCount: 0,
+  wrongCount: 0,
+  lives: 3,
+  timeLeft: 60,
+  startTime: 0,
+  consecutive: 0,
+  bestStreak: 0,
+  multiplier: 1,
+  timerInterval: null,
+  audioCtx: null,
+  isLocked: false,
+  recentQuestions: [],
+  pendingTimer: null,
+  speakTimer: null,
+  lastResultContext: null,
+  // 错题本：{ 关卡号: [{text, answer}] }，每次答错都自动记，做对了再移除
+  mistakes: {},
+};
+
+// ---------- 存档 ----------
+function save() {
+  try {
+    localStorage.setItem('frozenMath_v1', JSON.stringify({
+      language: state.language,
+      theme: state.theme,
+      soundMode: state.soundMode,
+      selectedCharacter: state.selectedCharacter,
+      unlockedLevels: state.unlockedLevels,
+      levelStars: state.levelStars,
+      lastMode: state.lastMode,
+      lastLevel: state.lastLevel,
+      seenTutorial: state.seenTutorial,
+      mistakes: state.mistakes,
+    }));
+  } catch(e) {}
+}
+function load() {
+  try {
+    const d = JSON.parse(localStorage.getItem('frozenMath_v1') || '{}');
+    if (d.language) state.language = d.language;
+    if (d.theme) state.theme = d.theme;
+    if (d.soundMode) state.soundMode = d.soundMode;
+    if (d.selectedCharacter) state.selectedCharacter = d.selectedCharacter;
+    if (d.unlockedLevels) state.unlockedLevels = d.unlockedLevels;
+    if (d.levelStars) state.levelStars = d.levelStars;
+    if (d.lastMode) state.lastMode = d.lastMode;
+    if (d.lastLevel) state.lastLevel = d.lastLevel;
+    if (d.seenTutorial) state.seenTutorial = d.seenTutorial;
+    if (d.mistakes && typeof d.mistakes === 'object') state.mistakes = d.mistakes;
+  } catch(e) {}
+}
+
+// ---------- 音效（Web Audio API，无需音频文件）----------
+function ensureAudio() {
+  if (!state.audioCtx) {
+    try { state.audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+    catch(e) {}
+  }
+  if (state.audioCtx && state.audioCtx.state === 'suspended') {
+    state.audioCtx.resume();
+  }
+}
+function tone(freq, dur, type='sine', vol=0.25, delay=0) {
+  if (!state.audioCtx) return;
+  if (state.soundMode === 'mute') return;
+  try {
+    const t0 = state.audioCtx.currentTime + delay;
+    const osc = state.audioCtx.createOscillator();
+    const gain = state.audioCtx.createGain();
+    osc.frequency.value = freq;
+    osc.type = type;
+    gain.gain.setValueAtTime(0, t0);
+    gain.gain.linearRampToValueAtTime(vol, t0 + 0.01);
+    gain.gain.exponentialRampToValueAtTime(0.001, t0 + dur);
+    osc.connect(gain); gain.connect(state.audioCtx.destination);
+    osc.start(t0); osc.stop(t0 + dur);
+  } catch(e) {}
+}
+const sfx = {
+  click: () => tone(700, 0.04, 'square', 0.08),
+  correct: () => { tone(523,0.1); tone(659,0.1,'sine',0.25,0.08); tone(784,0.18,'sine',0.25,0.16); },
+  tryAgain: () => { tone(440, 0.12, 'triangle', 0.2); tone(370, 0.15, 'triangle', 0.18, 0.1); },
+  wrong: () => { tone(300, 0.18, 'triangle', 0.2); tone(220, 0.25, 'triangle', 0.18, 0.12); },
+  levelUp: () => { tone(523,0.1); tone(659,0.1,'sine',0.3,0.1); tone(784,0.1,'sine',0.3,0.2); tone(1047,0.35,'sine',0.3,0.3); },
+  fail: () => { tone(330,0.2,'sawtooth',0.15); tone(247,0.3,'sawtooth',0.15,0.2); },
+  streak: () => { tone(880,0.08); tone(1175,0.08,'sine',0.25,0.08); tone(1568,0.18,'sine',0.25,0.16); },
+};
+
+// 朗读题目（浏览器内建语音）
+function speakQuestion(q) {
+  if (state.soundMode !== 'all' || !window.speechSynthesis) return;
+  try {
+    speechSynthesis.cancel();
+    if (state.speakTimer) { clearTimeout(state.speakTimer); state.speakTimer = null; }
+    const map = state.language === 'zh'
+      ? { '+': ' 加 ', '−': ' 减 ', '-': ' 减 ', '×': ' 乘 ', '÷': ' 除以 ' }
+      : { '+': ' plus ', '−': ' minus ', '-': ' minus ', '×': ' times ', '÷': ' divided by ' };
+    let text = q.text;
+    for (const k in map) text = text.split(k).join(map[k]);
+    text += state.language === 'zh' ? ' 等于多少' : ' equals what';
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = state.language === 'zh' ? 'zh-CN' : 'en-US';
+    u.rate = 0.9;
+    u.pitch = 1.15;
+    u.volume = 0.9;
+    state.speakTimer = setTimeout(() => {
+      state.speakTimer = null;
+      try { speechSynthesis.speak(u); } catch(e) {}
+    }, 200);
+  } catch(e) {}
+}
+
+// ---------- 屏幕切换 ----------
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.getElementById('backBtn').style.visibility = (id === 'screen-welcome') ? 'hidden' : 'visible';
+  window.scrollTo(0, 0);
+}
+
+// ---------- 渲染：欢迎 / 选角色 ----------
+function renderWelcome() {
+  const grid = document.getElementById('characterGrid');
+  grid.innerHTML = '';
+  for (const key in CHARACTERS) {
+    const c = CHARACTERS[key];
+    const card = document.createElement('div');
+    card.className = 'character-card' + (state.selectedCharacter === key ? ' selected' : '');
+    card.innerHTML = `${c.svg}<div class="character-name">${t(c.nameKey)}</div>`;
+    card.addEventListener('click', () => {
+      ensureAudio(); sfx.click();
+      state.selectedCharacter = key;
+      save();
+      renderWelcome();
+    });
+    grid.appendChild(card);
+  }
+  document.getElementById('welcomeNext').disabled = !state.selectedCharacter;
+}
+
+// ---------- 渲染：模式选择 ----------
+function renderModes() {
+  const list = document.getElementById('modeList');
+  const modes = [
+    { key: 'practice', icon: '🌟', nameKey: 'practiceMode', descKey: 'practiceDesc' },
+    { key: 'timed',    icon: '⏱️', nameKey: 'timedMode',    descKey: 'timedDesc' },
+    { key: 'quest',    icon: '❤️', nameKey: 'questMode',    descKey: 'questDesc' },
+    { key: 'challenge',icon: '🏆', nameKey: 'challengeMode',descKey: 'challengeDesc' },
+  ];
+  list.innerHTML = '';
+  modes.forEach(m => {
+    const btn = document.createElement('button');
+    btn.className = 'mode-btn';
+    btn.innerHTML = `
+      <div class="mode-row">
+        <div class="mode-icon">${m.icon}</div>
+        <div class="mode-text">
+          <div class="mode-name">${t(m.nameKey)}</div>
+          <div class="mode-desc">${t(m.descKey)}</div>
+        </div>
+        <div style="font-size:22px;color:var(--text-light)">›</div>
+      </div>
+    `;
+    btn.addEventListener('click', () => {
+      ensureAudio(); sfx.click();
+      state.currentMode = m.key;
+      renderLevels();
+      showScreen('screen-level');
+    });
+    list.appendChild(btn);
+  });
+}
+
+// ---------- 渲染：等级选择 ----------
+function renderLevels() {
+  const grid = document.getElementById('levelGrid');
+  grid.innerHTML = '';
+  const modeNameMap = { practice: 'practiceMode', timed: 'timedMode', quest: 'questMode', challenge: 'challengeMode' };
+  document.getElementById('levelScreenTitle').textContent = t(modeNameMap[state.currentMode]);
+  document.getElementById('levelScreenSubtitle').textContent = t({
+    practice: 'practiceDesc', timed: 'timedDesc', quest: 'questDesc', challenge: 'challengeDesc'
+  }[state.currentMode]);
+
+  for (let i = 1; i <= 12; i++) {
+    const cell = document.createElement('div');
+    const unlocked = state.unlockedLevels.includes(i);
+    const stars = state.levelStars[i] || 0;
+    cell.className = 'level-cell ' + (unlocked ? 'unlocked' : 'locked');
+    let starHtml = '';
+    if (unlocked && stars > 0) {
+      for (let s = 0; s < 3; s++) starHtml += s < stars ? '★' : '☆';
+    } else if (unlocked) {
+      starHtml = '☆☆☆';
+    }
+    const mCount = (state.mistakes[i] || []).length;
+    const mBadge = (unlocked && mCount > 0)
+      ? `<div style="position:absolute;top:4px;right:4px;background:linear-gradient(135deg,#ff80ab,#7c4dff);color:#fff;font-size:10px;font-weight:800;padding:2px 6px;border-radius:10px;box-shadow:0 2px 6px rgba(124,77,255,0.4);">📒${mCount}</div>`
+      : '';
+    cell.style.position = 'relative';
+    cell.innerHTML = `
+      <div class="level-num">${i}</div>
+      <div class="level-stars">${starHtml}</div>
+      ${unlocked ? '' : '<div class="level-lock">🔒</div>'}
+      ${mBadge}
+    `;
+    if (unlocked) {
+      cell.addEventListener('click', () => {
+        ensureAudio(); sfx.click();
+        state.currentLevel = i;
+        startGame();
+      });
+    }
+    grid.appendChild(cell);
+  }
+}
+
+// ---------- 游戏开始 ----------
+function startGame() {
+  state.score = 0;
+  state.questionsAnswered = 0;
+  state.correctCount = 0;
+  state.wrongCount = 0;
+  state.lives = 3;
+  state.timeLeft = 60;
+  state.consecutive = 0;
+  state.bestStreak = 0;
+  state.multiplier = 1;
+  state.attempts = 0;
+  state.inputBuffer = '';
+  state.startTime = Date.now();
+  state.isLocked = false;
+  state.recentQuestions = []; // 每局重置避免上局题目"堵塞"新一局
+  if (state.timerInterval) clearInterval(state.timerInterval);
+
+  // 顶部玩家头像
+  const avatar = document.getElementById('gamePlayerAvatar');
+  avatar.innerHTML = CHARACTERS[state.selectedCharacter].svg;
+  document.getElementById('gamePlayerName').textContent = t(CHARACTERS[state.selectedCharacter].nameKey);
+  document.getElementById('gameLevelLabel').textContent = t('levelLabel', { n: state.currentLevel });
+
+  renderNumpad();
+  showScreen('screen-game');
+  state.lastMode = state.currentMode;
+  state.lastLevel = state.currentLevel;
+  save();
+  maybeShowTutorial();
+  nextQuestion();
+
+  if (state.currentMode === 'timed') {
+    state.timerInterval = setInterval(() => {
+      state.timeLeft--;
+      updateStats();
+      if (state.timeLeft <= 0) {
+        clearInterval(state.timerInterval);
+        endGame('timeUp');
+      }
+    }, 1000);
+  }
+  updateStats();
+}
+
+// ---------- 顶部状态条 ----------
+function updateStats() {
+  const box = document.getElementById('gameStats');
+  let html = '';
+  if (state.currentMode === 'practice') {
+    html += `<div class="stat-pill">✓ ${state.correctCount}</div>`;
+  } else if (state.currentMode === 'timed') {
+    const cls = state.timeLeft <= 10 ? 'stat-pill warn' : 'stat-pill';
+    html += `<div class="${cls}">⏱ ${state.timeLeft}${t('seconds')}</div>`;
+    html += `<div class="stat-pill">✓ ${state.correctCount}</div>`;
+  } else if (state.currentMode === 'quest') {
+    const pct = Math.min(100, state.correctCount * 10);
+    html += `<div class="stat-pill">${'❤️'.repeat(state.lives)}${'🤍'.repeat(3 - state.lives)}</div>`;
+    html += `<div class="quest-bar"><div class="quest-bar-fill" style="width:${pct}%"></div><div class="quest-bar-text">${state.correctCount} / 10</div></div>`;
+  } else if (state.currentMode === 'challenge') {
+    html += `<div class="stat-pill">🔥 ${state.consecutive}</div>`;
+    html += `<div class="stat-pill">⭐ ${state.score}</div>`;
+  }
+  box.innerHTML = html;
+}
+
+// ---------- 出题 ----------
+function nextQuestion() {
+  state.attempts = 0;
+  state.inputBuffer = '';
+  state.isLocked = false;
+  let q = null;
+  // 30% 概率从本关错题本抽一道复习（如果有的话）
+  const lvlMistakes = state.mistakes[state.currentLevel] || [];
+  if (lvlMistakes.length > 0 && Math.random() < 0.3) {
+    const m = lvlMistakes[ri(0, lvlMistakes.length - 1)];
+    q = { text: m.text, answer: m.answer, isReview: true };
+  } else {
+    let tries = 0;
+    do {
+      q = LEVEL_CONFIGS[state.currentLevel].gen();
+      tries++;
+    } while (tries < 12 && state.recentQuestions.includes(q.text));
+  }
+  state.recentQuestions.push(q.text);
+  // 防重复窗口扩大到 15，避免一局内反复出现同一题
+  if (state.recentQuestions.length > 15) state.recentQuestions.shift();
+  state.currentQuestion = q;
+  // 给运算符上色
+  const colored = q.text
+    .replace(/\+/g, '<span class="op-add">+</span>')
+    .replace(/−/g, '<span class="op-sub">−</span>')
+    .replace(/×/g, '<span class="op-mul">×</span>')
+    .replace(/÷/g, '<span class="op-div">÷</span>');
+  const reviewTag = q.isReview
+    ? `<div style="font-size:11px;font-weight:800;color:#fff;background:linear-gradient(135deg,#ff80ab,#7c4dff);display:inline-block;padding:3px 10px;border-radius:10px;margin-bottom:8px;letter-spacing:1px;">📒 ${state.language === 'zh' ? '复习题' : 'Review'}</div><br>`
+    : '';
+  document.getElementById('questionText').innerHTML = `${reviewTag}${colored} <span class="eq">=</span> ?`;
+  // 卡片滑入动画
+  const card = document.querySelector('.question-card');
+  card.classList.remove('slide-in');
+  void card.offsetWidth;
+  card.classList.add('slide-in');
+  speakQuestion(q);
+  const ad = document.getElementById('answerDisplay');
+  ad.textContent = ' ';
+  ad.className = 'answer-display';
+  document.getElementById('feedback').textContent = ' ';
+  document.getElementById('feedback').className = 'feedback';
+}
+
+// ---------- 数字键盘 ----------
+function renderNumpad() {
+  const pad = document.getElementById('numpad');
+  pad.innerHTML = '';
+  const keys = ['1','2','3','4','5','6','7','8','9','clr','0','go'];
+  keys.forEach(k => {
+    const btn = document.createElement('button');
+    btn.type = 'button'; // 防止误触发表单提交，外接键盘可 Tab 聚焦
+    btn.className = 'num-btn';
+    if (k === 'clr') { btn.classList.add('clr'); btn.textContent = '⌫'; btn.setAttribute('aria-label', '删除'); }
+    else if (k === 'go') { btn.classList.add('go'); btn.textContent = 'OK'; btn.setAttribute('aria-label', '提交'); }
+    else btn.textContent = k;
+    btn.addEventListener('click', () => onKey(k));
+    pad.appendChild(btn);
+  });
+}
+
+function onKey(k) {
+  if (state.isLocked) return;
+  ensureAudio();
+  sfx.click();
+  const ad = document.getElementById('answerDisplay');
+  if (k === 'clr') {
+    state.inputBuffer = state.inputBuffer.slice(0, -1);
+  } else if (k === 'go') {
+    if (state.inputBuffer === '') return;
+    submitAnswer();
+    return;
+  } else {
+    if (state.inputBuffer.length < 4) state.inputBuffer += k;
+  }
+  ad.textContent = state.inputBuffer || ' ';
+}
+
+// ---------- 提交答案 ----------
+function submitAnswer() {
+  const userAns = parseInt(state.inputBuffer, 10);
+  const correctAns = state.currentQuestion.answer;
+  const ad = document.getElementById('answerDisplay');
+  const fb = document.getElementById('feedback');
+
+  if (userAns === correctAns) {
+    // 答对了
+    state.isLocked = true;
+    sfx.correct();
+    // 如果是错题复习，做对就把这题从错题本移除
+    if (state.currentQuestion.isReview) {
+      const arr = state.mistakes[state.currentLevel] || [];
+      const idx = arr.findIndex(m => m.text === state.currentQuestion.text);
+      if (idx >= 0) {
+        arr.splice(idx, 1);
+        if (arr.length === 0) delete state.mistakes[state.currentLevel];
+        save();
+      }
+    }
+    ad.classList.add('correct-glow');
+    fb.textContent = '✨ ' + t('correct') + ' ✨';
+    fb.className = 'feedback correct';
+    avatarReact('correct');
+    state.correctCount++;
+    state.questionsAnswered++;
+    state.consecutive++;
+    if (state.consecutive > state.bestStreak) state.bestStreak = state.consecutive;
+    // 挑战模式分数计算
+    if (state.currentMode === 'challenge') {
+      const mult = Math.min(10, 1 + Math.floor(state.consecutive / 3));
+      state.multiplier = mult;
+      state.score += 10 * mult;
+      if (state.consecutive > 0 && state.consecutive % 5 === 0) {
+        showStreakBanner(`🔥 ${state.consecutive} ${t('streak')}!  x${mult}`);
+        sfx.streak();
+      }
+    } else {
+      state.score += 10;
+    }
+    sparkle();
+    updateStats();
+    showSkipHint();
+    state.pendingTimer = setTimeout(() => { state.pendingTimer = null; checkProgress(); }, 800);
+  } else {
+    // 答错了
+    state.attempts++;
+    ad.classList.add('shake');
+    setTimeout(() => ad.classList.remove('shake'), 400);
+
+    if (state.attempts === 1) {
+      // 第一次错：再试一次
+      sfx.tryAgain();
+      fb.textContent = '💪 ' + t('tryAgain');
+      fb.className = 'feedback tryagain';
+      avatarReact('tryagain');
+      state.inputBuffer = '';
+      ad.textContent = ' ';
+    } else {
+      // 第二次错：显示正确答案
+      state.isLocked = true;
+      sfx.wrong();
+      ad.classList.add('wrong-glow');
+      ad.textContent = correctAns;
+      fb.textContent = '📘 ' + t('wrong') + ' ' + correctAns;
+      fb.className = 'feedback wrong';
+      avatarReact('wrong');
+      state.questionsAnswered++;
+      state.wrongCount++;
+      state.consecutive = 0;
+      state.multiplier = 1;
+      if (state.currentMode === 'quest') {
+        state.lives--;
+      }
+      // 加入本关错题本（同题不重复，每关最多 20 道）
+      const mArr = state.mistakes[state.currentLevel] || (state.mistakes[state.currentLevel] = []);
+      if (!mArr.some(m => m.text === state.currentQuestion.text)) {
+        mArr.push({ text: state.currentQuestion.text, answer: correctAns });
+        if (mArr.length > 20) mArr.shift();
+        save();
+      }
+      updateStats();
+      showSkipHint();
+      state.pendingTimer = setTimeout(() => { state.pendingTimer = null; checkProgress(); }, 1800);
+    }
+  }
+}
+
+// ---------- 检查游戏进度 ----------
+function checkProgress() {
+  if (state.currentMode === 'quest') {
+    if (state.lives <= 0) { endGame('gameOver'); return; }
+    if (state.correctCount >= 10) { endGame('levelComplete'); return; }
+    nextQuestion();
+  } else if (state.currentMode === 'practice') {
+    if (state.questionsAnswered >= 10) { endGame('practiceDone'); return; }
+    nextQuestion();
+  } else if (state.currentMode === 'timed') {
+    nextQuestion(); // 直到时间到
+  } else if (state.currentMode === 'challenge') {
+    if (state.questionsAnswered >= 15) { endGame('practiceDone'); return; }
+    nextQuestion();
+  }
+}
+
+// ---------- 结束游戏 ----------
+function endGame(reason) {
+  if (state.timerInterval) { clearInterval(state.timerInterval); state.timerInterval = null; }
+
+  // 计算星星
+  let stars = 0;
+  const accuracy = state.questionsAnswered > 0 ? state.correctCount / state.questionsAnswered : 0;
+  if (state.currentMode === 'practice') {
+    if (accuracy >= 1) stars = 3;
+    else if (accuracy >= 0.7) stars = 2;
+    else if (accuracy >= 0.4) stars = 1;
+  } else if (state.currentMode === 'timed') {
+    if (state.correctCount >= 15) stars = 3;
+    else if (state.correctCount >= 10) stars = 2;
+    else if (state.correctCount >= 5) stars = 1;
+  } else if (state.currentMode === 'quest') {
+    if (reason === 'levelComplete') {
+      if (state.lives === 3) stars = 3;
+      else if (state.lives === 2) stars = 2;
+      else stars = 1;
+    }
+  } else if (state.currentMode === 'challenge') {
+    if (state.bestStreak >= 10) stars = 3;
+    else if (state.bestStreak >= 5) stars = 2;
+    else if (state.bestStreak >= 3) stars = 1;
+  }
+
+  // 解锁与存星
+  const passed = (state.currentMode === 'quest') ? (reason === 'levelComplete') : (stars >= 1);
+  let unlockedNew = false;
+  if (passed) {
+    if (state.currentLevel < 12 && !state.unlockedLevels.includes(state.currentLevel + 1)) {
+      state.unlockedLevels.push(state.currentLevel + 1);
+      unlockedNew = true;
+    }
+    const prev = state.levelStars[state.currentLevel] || 0;
+    if (stars > prev) state.levelStars[state.currentLevel] = stars;
+  }
+  save();
+
+  // 渲染结果页
+  let emoji = '🎉', titleKey = 'levelComplete';
+  if (reason === 'gameOver') { emoji = '💪'; titleKey = 'gameOver'; sfx.fail(); }
+  else if (reason === 'timeUp') { emoji = '⏰'; titleKey = 'timeUp'; sfx.fail(); }
+  else if (reason === 'practiceDone') { emoji = '🌟'; titleKey = 'practiceDone'; sfx.levelUp(); }
+  else { sfx.levelUp(); confettiBurst(); }
+  if (stars >= 3) { superCelebrate(); setTimeout(() => sfx.streak(), 400); }
+  if (passed && state.currentLevel === 12) {
+    superCelebrate();
+    setTimeout(() => confettiBurst(), 600);
+    setTimeout(() => confettiBurst(), 1400);
+    setTimeout(() => sfx.levelUp(), 800);
+  }
+
+  // 毕业典礼角色阵容（一次性填充）
+  const isGraduation = (state.currentLevel === 12) && passed;
+  if (isGraduation) {
+    const cast = document.getElementById('gradCast');
+    cast.innerHTML = '';
+    for (const k in CHARACTERS) {
+      const d = document.createElement('div');
+      d.innerHTML = CHARACTERS[k].svg;
+      cast.appendChild(d);
+    }
+  }
+
+  // 鼓励语
+  let msgKey = 'msgKeep';
+  if (stars >= 3) msgKey = 'perfectMsg';
+  else if (stars >= 2) msgKey = 'msgWow';
+  else if (stars >= 1) msgKey = 'msgGreat';
+
+  // 决定要显示哪些数据行
+  const elapsed = Math.round((Date.now() - state.startTime) / 1000);
+  let rowKeys = [];
+  if (state.currentMode === 'challenge') {
+    rowKeys.push(['yourScore', state.score]);
+    rowKeys.push(['bestStreak', state.bestStreak + ' 🔥']);
+  } else if (state.currentMode === 'timed') {
+    rowKeys.push(['correctAnswers', state.correctCount]);
+    rowKeys.push(['totalAnswers', state.questionsAnswered]);
+  } else {
+    rowKeys.push(['correctCount', `${state.correctCount}/${state.questionsAnswered}`]);
+  }
+  if (state.questionsAnswered > 0) rowKeys.push(['accuracy', Math.round(accuracy * 100) + '%']);
+  rowKeys.push(['timeUsed', elapsed]);
+
+  state.lastResultContext = {
+    emoji, titleKey, msgKey, unlockedNew, isGraduation, stars, rowKeys,
+    canNext: passed && state.currentLevel < 12,
+  };
+  renderResultContent();
+  showScreen('screen-result');
+}
+
+// 根据 lastResultContext 渲染结果页（语言切换时也用）
+function renderResultContent() {
+  const ctx = state.lastResultContext;
+  if (!ctx) return;
+  // 毕业典礼
+  const grad = document.getElementById('graduation');
+  if (ctx.isGraduation) {
+    grad.style.display = 'block';
+    document.getElementById('gradTitle').textContent = t('gradTitle');
+    document.getElementById('gradMsg').textContent = t('gradMsg');
+    document.getElementById('resultChar').style.display = 'none';
+  } else {
+    grad.style.display = 'none';
+    const charBox = document.getElementById('resultChar');
+    if (state.selectedCharacter && CHARACTERS[state.selectedCharacter]) {
+      charBox.innerHTML = CHARACTERS[state.selectedCharacter].svg;
+      charBox.style.display = 'block';
+    }
+  }
+  document.getElementById('resultEmoji').textContent = ctx.emoji;
+  document.getElementById('resultTitle').textContent = t(ctx.titleKey);
+  document.getElementById('resultMsg').textContent = t(ctx.msgKey) + (ctx.unlockedNew ? '  🔓 ' + t('levelUnlocked') : '');
+
+  // 星星
+  let starsHtml = '';
+  for (let i = 0; i < 3; i++) {
+    starsHtml += i < ctx.stars ? '<span class="filled">★</span>' : '<span class="empty">★</span>';
+  }
+  document.getElementById('resultStars').innerHTML = starsHtml;
+
+  // 数据行
+  const html = ctx.rowKeys.map(([labelKey, value]) => {
+    const label = t(labelKey);
+    const val = labelKey === 'timeUsed' ? value + t('seconds') : value;
+    return `<div class="result-row"><span class="result-label">${label}</span><span class="result-value">${val}</span></div>`;
+  }).join('');
+  document.getElementById('resultStats').innerHTML = html;
+
+  // 下一关按钮
+  document.getElementById('resultNext').style.display = ctx.canNext ? 'block' : 'none';
+}
+
+// ---------- 视觉特效：闪光 ----------
+function sparkle() {
+  const card = document.querySelector('.question-card');
+  const r = card.getBoundingClientRect();
+  const emojis = ['❄️','✨','⭐','💎'];
+  for (let i = 0; i < 8; i++) {
+    const s = document.createElement('div');
+    s.className = 'sparkle-burst';
+    s.textContent = emojis[ri(0, emojis.length - 1)];
+    s.style.position = 'fixed';
+    s.style.left = (r.left + r.width / 2) + 'px';
+    s.style.top = (r.top + r.height / 2) + 'px';
+    s.style.fontSize = '22px';
+    s.style.pointerEvents = 'none';
+    s.style.zIndex = '15';
+    s.style.setProperty('--tx', (Math.random() - 0.5) * 200 + 'px');
+    s.style.setProperty('--ty', (Math.random() - 0.5) * 200 - 50 + 'px');
+    s.style.animation = 'sparkle 0.9s ease-out forwards';
+    document.body.appendChild(s);
+    setTimeout(() => s.remove(), 1000);
+  }
+}
+
+// 添加 sparkle 动画
+const styleEl = document.createElement('style');
+styleEl.textContent = `@keyframes sparkle { 0% {opacity:1;transform:translate(0,0) scale(0.4);} 100% {opacity:0;transform:translate(var(--tx),var(--ty)) scale(1.5);} }`;
+document.head.appendChild(styleEl);
+
+// 烟花特效
+function confettiBurst() {
+  const wrap = document.getElementById('celebrate');
+  wrap.innerHTML = '';
+  const items = ['❄️','✨','⭐','🎉','💙','💎'];
+  for (let i = 0; i < 30; i++) {
+    const c = document.createElement('div');
+    c.className = 'confetti';
+    c.textContent = items[ri(0, items.length - 1)];
+    c.style.left = Math.random() * 100 + '%';
+    c.style.top = '-30px';
+    c.style.animationDelay = Math.random() * 0.5 + 's';
+    c.style.animationDuration = (1.8 + Math.random() * 1.4) + 's';
+    wrap.appendChild(c);
+  }
+  setTimeout(() => wrap.innerHTML = '', 3500);
+}
+
+// 跳过提示
+function showSkipHint() {
+  const card = document.querySelector('.question-card');
+  if (!card) return;
+  let hint = card.querySelector('.skip-hint');
+  if (hint) hint.remove();
+  hint = document.createElement('div');
+  hint.className = 'skip-hint';
+  hint.textContent = state.language === 'zh' ? '👆 点击跳过' : '👆 Tap to skip';
+  card.appendChild(hint);
+}
+function skipPending() {
+  if (state.pendingTimer) {
+    clearTimeout(state.pendingTimer);
+    state.pendingTimer = null;
+    checkProgress();
+  }
+}
+
+// 角色头像反应气泡
+function avatarReact(type) {
+  const wrap = document.getElementById('gamePlayerAvatar');
+  if (!wrap) return;
+  const old = wrap.querySelector('.avatar-bubble');
+  if (old) old.remove();
+  const e = document.createElement('div');
+  e.className = 'avatar-bubble';
+  if (type === 'correct') e.textContent = ['💖','✨','🌟','💎'][ri(0,3)];
+  else if (type === 'tryagain') e.textContent = '💪';
+  else e.textContent = '🌧️';
+  wrap.appendChild(e);
+  setTimeout(() => e.remove(), 1500);
+}
+
+// 三星超级庆祝
+function superCelebrate() {
+  const sc = document.createElement('div');
+  sc.className = 'super-celebrate';
+  document.body.appendChild(sc);
+  for (let i = 0; i < 10; i++) {
+    const s = document.createElement('div');
+    s.className = 'super-star';
+    s.textContent = ['⭐','🌟','✨','💫'][ri(0,3)];
+    s.style.left = (8 + Math.random() * 84) + '%';
+    s.style.top = (8 + Math.random() * 70) + '%';
+    s.style.animationDelay = (Math.random() * 0.6) + 's';
+    sc.appendChild(s);
+  }
+  setTimeout(() => sc.remove(), 2200);
+}
+
+// 连击横幅
+function showStreakBanner(text) {
+  const b = document.getElementById('streakBanner');
+  b.textContent = text;
+  b.classList.remove('show');
+  void b.offsetWidth;
+  b.classList.add('show');
+}
+
+// ---------- 雪花背景 ----------
+function makeSnowflakes() {
+  const wrap = document.getElementById('snowflakes');
+  wrap.innerHTML = '';
+  const symbols = ['❄','❅','❆','✻','✽'];
+  const count = 18;
+  for (let i = 0; i < count; i++) {
+    const s = document.createElement('div');
+    s.className = 'snowflake';
+    s.textContent = symbols[ri(0, symbols.length - 1)];
+    s.style.left = Math.random() * 100 + '%';
+    s.style.fontSize = (10 + Math.random() * 18) + 'px';
+    s.style.animationDuration = (8 + Math.random() * 12) + 's';
+    s.style.animationDelay = -Math.random() * 15 + 's';
+    s.style.opacity = (0.5 + Math.random() * 0.5);
+    wrap.appendChild(s);
+  }
+}
+
+// 深色模式星星
+function makeStars() {
+  const wrap = document.getElementById('stars');
+  wrap.innerHTML = '';
+  for (let i = 0; i < 60; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    s.style.left = Math.random() * 100 + '%';
+    s.style.top = Math.random() * 70 + '%';
+    s.style.animationDelay = Math.random() * 3 + 's';
+    s.style.opacity = 0.3 + Math.random() * 0.7;
+    wrap.appendChild(s);
+  }
+}
+
+// ---------- 多语言 / 主题 ----------
+function applyLanguage() {
+  document.documentElement.lang = state.language === 'zh' ? 'zh' : 'en';
+  document.title = t('title');
+  // 语言按钮显示"切到哪种语言"，让小朋友一眼看懂
+  document.getElementById('langBtn').textContent = state.language === 'zh' ? 'EN' : '中';
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    el.textContent = t(el.dataset.i18n);
+  });
+  renderWelcome();
+  renderModes();
+  renderLevels();
+  refreshDynamicStrings();
+}
+
+// 切换语言时刷新游戏内动态文字
+function refreshDynamicStrings() {
+  // 游戏头部：玩家名 + 等级标签
+  if (state.selectedCharacter && CHARACTERS[state.selectedCharacter]) {
+    const nameEl = document.getElementById('gamePlayerName');
+    if (nameEl) nameEl.textContent = t(CHARACTERS[state.selectedCharacter].nameKey);
+  }
+  const lvlEl = document.getElementById('gameLevelLabel');
+  if (lvlEl && state.currentLevel) lvlEl.textContent = t('levelLabel', { n: state.currentLevel });
+
+  // 游戏内统计条（如游戏中）
+  const gameScreen = document.getElementById('screen-game');
+  if (gameScreen && gameScreen.classList.contains('active')) updateStats();
+
+  // 结果页（包含毕业典礼）
+  const resultScreen = document.getElementById('screen-result');
+  if (resultScreen && resultScreen.classList.contains('active') && state.lastResultContext) {
+    renderResultContent();
+  }
+
+  // 跳过提示（如显示）
+  const skipEl = document.querySelector('.skip-hint');
+  if (skipEl) skipEl.textContent = state.language === 'zh' ? '👆 点击跳过' : '👆 Tap to skip';
+
+  // 反馈文字（如显示）
+  const fb = document.getElementById('feedback');
+  if (fb && state.currentQuestion && fb.classList.length > 1) {
+    if (fb.classList.contains('correct')) fb.textContent = '✨ ' + t('correct') + ' ✨';
+    else if (fb.classList.contains('tryagain')) fb.textContent = '💪 ' + t('tryAgain');
+    else if (fb.classList.contains('wrong')) fb.textContent = '📘 ' + t('wrong') + ' ' + state.currentQuestion.answer;
+  }
+}
+function applyTheme() {
+  document.body.dataset.theme = state.theme;
+  document.getElementById('themeBtn').textContent = state.theme === 'light' ? '🌙' : '☀️';
+}
+function applySound() {
+  const icon = state.soundMode === 'all' ? '🔊' : state.soundMode === 'sfx' ? '🔉' : '🔇';
+  document.getElementById('speechBtn').textContent = icon;
+}
+
+// 教程气泡（首次进入游戏画面时显示）
+function maybeShowTutorial() {
+  if (state.seenTutorial) return;
+  setTimeout(() => {
+    const b = document.createElement('div');
+    b.className = 'tutorial-bubble';
+    b.textContent = t('tutorialTip');
+    document.body.appendChild(b);
+    setTimeout(() => {
+      b.style.animation = 'fadeOut 0.4s forwards';
+      setTimeout(() => b.remove(), 400);
+    }, 4500);
+    state.seenTutorial = true;
+    save();
+  }, 600);
+}
+
+// ---------- 事件绑定 ----------
+document.getElementById('langBtn').addEventListener('click', () => {
+  ensureAudio(); sfx.click();
+  state.language = state.language === 'zh' ? 'en' : 'zh';
+  save();
+  applyLanguage();
+});
+document.getElementById('themeBtn').addEventListener('click', () => {
+  ensureAudio(); sfx.click();
+  state.theme = state.theme === 'light' ? 'dark' : 'light';
+  save();
+  applyTheme();
+});
+document.getElementById('speechBtn').addEventListener('click', () => {
+  ensureAudio();
+  // 3 档循环: all → sfx → mute → all
+  state.soundMode = state.soundMode === 'all' ? 'sfx' : state.soundMode === 'sfx' ? 'mute' : 'all';
+  if (state.soundMode !== 'all' && window.speechSynthesis) speechSynthesis.cancel();
+  save();
+  applySound();
+  if (state.soundMode !== 'mute') sfx.click();
+});
+document.getElementById('backBtn').addEventListener('click', () => {
+  ensureAudio(); sfx.click();
+  const active = document.querySelector('.screen.active').id;
+  // 游戏中途返回前先确认，避免误触丢失进度
+  if (active === 'screen-game' && !state.isLocked && state.questionsAnswered > 0) {
+    const msg = state.language === 'zh' ? '确定要离开本局吗？当前进度会丢失。' : 'Leave this round? Progress will be lost.';
+    if (!confirm(msg)) return;
+  }
+  if (state.timerInterval) { clearInterval(state.timerInterval); state.timerInterval = null; }
+  if (state.pendingTimer) { clearTimeout(state.pendingTimer); state.pendingTimer = null; }
+  if (state.speakTimer) { clearTimeout(state.speakTimer); state.speakTimer = null; }
+  if (window.speechSynthesis) speechSynthesis.cancel();
+  if (active === 'screen-mode') showScreen('screen-welcome');
+  else if (active === 'screen-level') showScreen('screen-mode');
+  else if (active === 'screen-game' || active === 'screen-result') {
+    renderLevels(); // 刷新错题本徽标
+    showScreen('screen-level');
+  }
+});
+document.getElementById('welcomeNext').addEventListener('click', () => {
+  ensureAudio(); sfx.click();
+  showScreen('screen-mode');
+});
+document.getElementById('resultHome').addEventListener('click', () => {
+  ensureAudio(); sfx.click();
+  showScreen('screen-welcome');
+});
+document.getElementById('resultAgain').addEventListener('click', () => {
+  ensureAudio(); sfx.click();
+  startGame();
+});
+document.getElementById('resultNext').addEventListener('click', () => {
+  ensureAudio(); sfx.click();
+  if (state.unlockedLevels.includes(state.currentLevel + 1)) {
+    state.currentLevel++;
+    startGame();
+  }
+});
+
+// 点题目卡片可以跳过等待
+document.querySelector('.question-card').addEventListener('click', () => {
+  if (state.pendingTimer) { ensureAudio(); sfx.click(); skipPending(); }
+});
+
+// 键盘支持（电脑测试用）
+document.addEventListener('keydown', (e) => {
+  const active = document.querySelector('.screen.active').id;
+  if (active !== 'screen-game') return;
+  if (state.pendingTimer && (e.key === 'Enter' || e.key === ' ')) { skipPending(); return; }
+  if (e.key >= '0' && e.key <= '9') onKey(e.key);
+  else if (e.key === 'Enter') onKey('go');
+  else if (e.key === 'Backspace') onKey('clr');
+});
+
+// ---------- 启动 ----------
+load();
+applyTheme();
+applySound();
+applyLanguage();
+makeSnowflakes();
+makeStars();
+renderWelcome();
+renderModes();
+// 如果上次玩过，初始就定位到上次的等级
+if (state.lastLevel && state.lastLevel >= 1 && state.lastLevel <= 12) {
+  state.currentLevel = state.lastLevel;
+}
+if (state.lastMode) state.currentMode = state.lastMode;
+
+// 添加 fadeOut 动画（教程气泡用）
+const fadeStyle = document.createElement('style');
+fadeStyle.textContent = '@keyframes fadeOut { to { opacity: 0; transform: translateX(-50%) translateY(20px); } }';
+document.head.appendChild(fadeStyle);
+</script>
+
+</body>
+</html>
